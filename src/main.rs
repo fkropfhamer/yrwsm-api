@@ -9,7 +9,15 @@ struct Awesome {
     message: String,
 }
 
-static AWESOME: [&str; 2] = ["You are awesome! 🤩", "You are great! 😍"];
+const LENGTH: usize = 2;
+
+#[derive(Serialize)]
+struct Awesomes {
+    awesomes: [&'static str; LENGTH]
+}
+
+const AWESOMES: [&str; LENGTH] = ["You are awesome! 🤩", "You are great! 😍"];
+
 
 #[get("/")]
 fn index() -> &'static str {
@@ -17,15 +25,20 @@ fn index() -> &'static str {
 }
 
 #[get("/awesome")]
-fn json() -> Json<Awesome> {
-    Json(Awesome {  message: String::from(AWESOME[0]) })
+fn awesome() -> Json<Awesome> {
+    Json(Awesome {  message: String::from(AWESOMES[0]) })
 }
 
 #[get("/daily")]
 fn daily() -> Json<Awesome> {
-    Json(Awesome { message: String::from(AWESOME[1])})
+    Json(Awesome { message: String::from(AWESOMES[1])})
+}
+
+#[get("/all")]
+fn all() -> Json<Awesomes> {
+    Json(Awesomes { awesomes: AWESOMES })
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index, json, daily]).launch();
+    rocket::ignite().mount("/", routes![index, awesome, daily, all]).launch();
 }
